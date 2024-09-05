@@ -11,11 +11,12 @@ dependencies = [
   "pandas",
   "requests",
   "scikit-learn",
-  "nbformat",  # for plotly
+  "nbformat",      # for plotly
 ]
 
 [tool.ruff]
 extend-include = ["*.ipynb"]
+line-length = 100
 
 [tool.uv]
 dev-dependencies = ["ruff", "ipykernel"]

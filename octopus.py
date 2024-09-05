@@ -5,18 +5,47 @@ from typing import Literal, TypedDict
 import requests
 from requests.auth import HTTPBasicAuth
 
+API_KEY_ENV = "OCTOPUS_API_KEY"
+
 
 def get_api_key(api_key: str | None) -> str:
     if api_key is None:
-        api_key = os.getenv("OCTOPUS_API_KEY")
+        api_key = os.getenv(API_KEY_ENV)
     if api_key is None:
-        raise ValueError("OCTOPUS_API_KEY must be set")
+        raise ValueError(f"{API_KEY_ENV} must be set")
     if not api_key.startswith("sk_"):
-        raise ValueError("OCTOPUS_API_KEY must start with 'sk_'")
+        raise ValueError(f"{API_KEY_ENV} must start with 'sk_'")
     return api_key
 
 
-GSP = Literal["_A", "_B", "_C", "_D", "_E", "_F", "_G", "_H", "_I", "_J", "_K", "_L", "_M", "_N", "_O", "_P", "_Q", "_R", "_S", "_T", "_U", "_V", "_W", "_X", "_Y", "_Z"]
+GSP = Literal[
+    "_A",
+    "_B",
+    "_C",
+    "_D",
+    "_E",
+    "_F",
+    "_G",
+    "_H",
+    "_I",
+    "_J",
+    "_K",
+    "_L",
+    "_M",
+    "_N",
+    "_O",
+    "_P",
+    "_Q",
+    "_R",
+    "_S",
+    "_T",
+    "_U",
+    "_V",
+    "_W",
+    "_X",
+    "_Y",
+    "_Z",
+]
 
 
 class ElectricityMeterPointV1(TypedDict):
@@ -95,7 +124,12 @@ class DualFuelDualRateConsumptionV1(TypedDict):
     gas_standard: int
 
 
-PlanType = Literal["electricity_single_rate", "electricity_dual_rate", "dual_fuel_single_rate", "dual_fuel_dual_rate"]
+PlanType = Literal[
+    "electricity_single_rate",
+    "electricity_dual_rate",
+    "dual_fuel_single_rate",
+    "dual_fuel_dual_rate",
+]
 
 
 class SampleQuoteV1(TypedDict):
@@ -143,9 +177,7 @@ class OctopusEnergyAPIClient:
     base_url: str
     session: requests.Session  # lateinit
 
-    def __init__(
-        self, api_key: str | None = None, base_url: str = "https://api.octopus.energy/"
-    ):
+    def __init__(self, api_key: str | None = None, base_url: str = "https://api.octopus.energy/"):
         self.api_key = get_api_key(api_key)
         self.base_url = base_url
 
