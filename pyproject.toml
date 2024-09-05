@@ -1,0 +1,14 @@
+[project]
+name = "energy"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "matplotlib",
+  "python-dotenv",
+  "pandas",
+  "requests",
+  "scikit-learn",
+  "ipykernel",
+]
