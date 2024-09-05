@@ -1,6 +1,6 @@
 from datetime import date, datetime
 import os
-from typing import Literal, NewType, TypedDict
+from typing import Literal, TypedDict
 
 import requests
 from requests.auth import HTTPBasicAuth
