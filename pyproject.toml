@@ -5,10 +5,17 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+  "plotly",
   "matplotlib",
   "python-dotenv",
   "pandas",
   "requests",
   "scikit-learn",
-  "ipykernel",
+  "nbformat",  # for plotly
 ]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+
+[tool.uv]
+dev-dependencies = ["ruff", "ipykernel"]
