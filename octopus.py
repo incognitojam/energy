@@ -88,10 +88,8 @@ class ProductV1(TypedDict):
 PaymentMethod = Literal["direct_debit_monthly", "direct_debit_quarterly"]
 
 
-class ElectricityTariffV1(TypedDict):
+class BaseElectricityTariffV1(TypedDict):
     code: str
-    standard_unit_rate_exc_vat: float
-    standard_unit_rate_inc_vat: float
     standing_charge_exc_vat: float
     standing_charge_inc_vat: float
     online_discount_exc_vat: float
@@ -102,6 +100,18 @@ class ElectricityTariffV1(TypedDict):
     exit_fees_inc_vat: float
     exit_fees_type: str
     links: list[LinkV1]
+
+
+class ElectricitySingleRateTariffV1(BaseElectricityTariffV1):
+    standard_unit_rate_exc_vat: float
+    standard_unit_rate_inc_vat: float
+
+
+class ElectricityDualRateTariffV1(BaseElectricityTariffV1):
+    day_unit_rate_exc_vat: float
+    day_unit_rate_inc_vat: float
+    night_unit_rate_exc_vat: float
+    night_unit_rate_inc_vat: float
 
 
 class ElectricitySingleRateConsumptionV1(TypedDict):
@@ -161,8 +171,8 @@ class ProductDetailsV1(TypedDict):
     available_to: str | None
     brand: str
     links: list[LinkV1]
-    single_register_electricity_tariffs: dict[GSP, dict[PaymentMethod, ElectricityTariffV1]]
-    dual_register_electricity_tariffs: dict[GSP, dict[PaymentMethod, dict]]
+    single_register_electricity_tariffs: dict[GSP, dict[PaymentMethod, ElectricitySingleRateTariffV1]]
+    dual_register_electricity_tariffs: dict[GSP, dict[PaymentMethod, ElectricityDualRateTariffV1]]
     single_register_gas_tariffs: dict[GSP, dict[PaymentMethod, dict]]
     sample_quotes: dict[GSP, dict[PaymentMethod, dict[PlanType, SampleQuoteV1]]]
     sample_consumption: SampleConsumptionV1
@@ -235,9 +245,7 @@ class OctopusEnergyAPIClient:
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(
-            f"v1/electricity-meter-points/{mpan}/meters/{serial}/consumption?{params}"
-        )
+        return self._get_all(f"v1/electricity-meter-points/{mpan}/meters/{serial}/consumption?{params}")
 
     def list_gas_meter_consumption_v1(
         self,
@@ -254,9 +262,7 @@ class OctopusEnergyAPIClient:
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(
-            f"v1/gas-meter-points/{mpan}/meters/{serial}/consumption?{params}"
-        )
+        return self._get_all(f"v1/gas-meter-points/{mpan}/meters/{serial}/consumption?{params}")
 
     def list_products_v1(
         self,
@@ -293,13 +299,11 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/electricity-tariff-day-unit-rates?{params}")
-    
+        return self._get_all(f"v1/products/{product_code}/electricity-tariffs/{tariff_code}/day-unit-rates?{params}")
+
     def list_electricity_tariff_night_unit_rates_v1(
         self,
         product_code: str,
@@ -308,12 +312,10 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/electricity-tariff-night-unit-rates?{params}")
+        return self._get_all(f"v1/products/{product_code}/electricity-tariffs/{tariff_code}/night-unit-rates?{params}")
 
     def list_electricity_tariff_standard_unit_rates_v1(
         self,
@@ -323,12 +325,10 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/electricity-tariff-standard-unit-rates?{params}")
+        return self._get_all(f"v1/products/{product_code}/electricity-tariffs/{tariff_code}/standard-unit-rates?{params}")
 
     def list_electricity_tariff_standing_charges_v1(
         self,
@@ -338,12 +338,10 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/electricity-tariff-standing-charges?{params}")
+        return self._get_all(f"v1/products/{product_code}/electricity-tariffs/{tariff_code}/standing-charges?{params}")
 
     def list_gas_tariff_standard_unit_rates_v1(
         self,
@@ -353,13 +351,11 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/gas-tariff-standard-unit-rates?{params}")
-    
+        return self._get_all(f"v1/products/{product_code}/gas-tariffs/{tariff_code}/standard-unit-rates?{params}")
+
     def list_gas_tariff_standing_charges_v1(
         self,
         product_code: str,
@@ -368,9 +364,7 @@ class OctopusEnergyAPIClient:
         period_to: datetime | None = None,
     ) -> list[UnitRateV1]:
         params = params_to_str(
-            product_code=product_code,
-            tariff_code=tariff_code,
             period_from=period_from.isoformat() if period_from else None,
             period_to=period_to.isoformat() if period_to else None,
         )
-        return self._get_all(f"v1/gas-tariff-standing-charges?{params}")
+        return self._get_all(f"v1/products/{product_code}/gas-tariffs/{tariff_code}/standing-charges?{params}")
