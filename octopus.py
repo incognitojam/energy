@@ -172,7 +172,7 @@ class UnitRateV1(TypedDict):
     value_exc_vat: float
     value_inc_vat: float
     valid_from: str
-    valid_to: str
+    valid_to: str | None
     payment_method: Any
 
 
