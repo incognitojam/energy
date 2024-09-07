@@ -5,13 +5,11 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-  "plotly",
   "matplotlib",
   "python-dotenv",
   "pandas",
   "requests",
   "scikit-learn",
-  "nbformat",      # for plotly
 ]
 
 [tool.ruff]
